@@ -12,14 +12,27 @@ COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 RUN bun run build
 
+
 # --- Etapa runtime ---
-FROM oven/bun:1 AS runtime
+FROM node:20-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOST=0.0.0.0
 
-COPY --from=builder /app ./
-COPY --from=builder /app/.next/standalone .next/standalone
+# Copiar todo el standalone
+COPY --from=builder /app/.next/standalone ./
+# Copiar public y static
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/static ./.next/static
 
+# Crear carpeta meta para Drizzle si no existe
+RUN mkdir -p ./drizzle/migrations/meta && \
+    touch ./drizzle/migrations/meta/_journal.json
+
+EXPOSE 3000
+
+CMD ["sh", "-c", "bun run db:migrate || true && node server.js"]
 # Exponer puerto
 EXPOSE 3000
 
