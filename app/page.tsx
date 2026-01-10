@@ -1,4 +1,5 @@
-import { Suspense } from "react";
+"use client";
+
 import {
 	Card,
 	CardContent,
@@ -23,29 +24,8 @@ export default function Home() {
 					</div>
 
 					<div className="grid gap-6 md:grid-cols-2">
-						<Suspense
-							fallback={
-								<Card className="bg-zinc-900 border-zinc-800">
-									<CardHeader>
-										<CardTitle className="text-white">Loading...</CardTitle>
-									</CardHeader>
-								</Card>
-							}
-						>
-							<AuthStatus />
-						</Suspense>
-
-						<Suspense
-							fallback={
-								<Card className="bg-zinc-900 border-zinc-800">
-									<CardHeader>
-										<CardTitle className="text-white">Loading...</CardTitle>
-									</CardHeader>
-								</Card>
-							}
-						>
-							<GoAPITest />
-						</Suspense>
+						<AuthStatus />
+						<GoAPITest />
 					</div>
 
 					<div className="mt-8 text-center">
