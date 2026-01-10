@@ -1,25 +1,32 @@
 
-# Install deps
+# --- Etapa de dependencias ---
 FROM oven/bun:1 AS deps
 WORKDIR /app
 COPY package.json bun.lockb* ./
 RUN bun install --frozen-lockfile
 
-# Build app
+# --- Etapa de build ---
 FROM oven/bun:1 AS builder
 WORKDIR /app
 COPY . .
 COPY --from=deps /app/node_modules ./node_modules
 RUN bun run build
 
-# Runtime
-FROM oven/bun:1
+# --- Etapa runtime ---
+FROM oven/bun:1 AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=builder /app ./
+COPY --from=builder /app/.next/standalone .next/standalone
+
+# Exponer puerto
 EXPOSE 3000
 
-# Run migrations and start server
-CMD ["sh", "-c", "bun run db:migrate && bun run start"]
+# Crear carpeta meta para Drizzle si no existe
+RUN mkdir -p ./drizzle/migrations/meta && \
+    touch ./drizzle/migrations/meta/_journal.json
+
+# CMD para ejecutar migraciones y luego el servidor Next.js standalone
+CMD ["sh", "-c", "bun run db:migrate || true && node .next/standalone/server.js"]
 
