@@ -1,5 +1,4 @@
 
-
 FROM oven/bun:1 AS deps
 WORKDIR /app
 COPY package.json bun.lockb* ./
@@ -17,10 +16,12 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
-# Copiar standalone tal cual lo genera Next
+# Copiar todo el standalone completo
 COPY --from=builder /app/.next/standalone ./
 
-# CMD para levantar Next.js
+# Exponer puerto
 EXPOSE 3000
+
+# Levantar Next.js desde standalone
 CMD ["node", "server.js"]
 
