@@ -1,4 +1,5 @@
 
+
 FROM oven/bun:1 AS deps
 WORKDIR /app
 COPY package.json bun.lockb* ./
@@ -16,12 +17,10 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
+# Copiar standalone tal cual lo genera Next
 COPY --from=builder /app/.next/standalone ./
 
-RUN mkdir -p ./drizzle/migrations/meta && \
-    touch ./drizzle/migrations/meta/_journal.json
-
+# CMD para levantar Next.js
 EXPOSE 3000
-
 CMD ["node", "server.js"]
 
