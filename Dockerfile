@@ -34,7 +34,7 @@ EXPOSE 3000
 
 CMD ["sh", "-c", "bun run db:migrate || true && node server.js"]
 # Exponer puerto
-EXPOSE 3000
+EXPOSE 3001
 
 # Crear carpeta meta para Drizzle si no existe
 RUN mkdir -p ./drizzle/migrations/meta && \
