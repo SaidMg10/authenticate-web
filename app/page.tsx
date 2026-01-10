@@ -1,5 +1,4 @@
-"use client";
-
+import dynamic from "next/dynamic";
 import {
 	Card,
 	CardContent,
@@ -7,8 +6,41 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { AuthStatus } from "@/components/auth-status";
-import { GoAPITest } from "@/components/go-api-test";
+
+// ! Deshabilitar SSR para estos componentes
+const AuthStatus = dynamic(
+	() =>
+		import("@/components/auth-status").then((mod) => ({
+			default: mod.AuthStatus,
+		})),
+	{
+		ssr: false,
+		loading: () => (
+			<Card className="bg-zinc-900 border-zinc-800">
+				<CardHeader>
+					<CardTitle className="text-white">Loading...</CardTitle>
+				</CardHeader>
+			</Card>
+		),
+	},
+);
+
+const GoAPITest = dynamic(
+	() =>
+		import("@/components/go-api-test").then((mod) => ({
+			default: mod.GoAPITest,
+		})),
+	{
+		ssr: false,
+		loading: () => (
+			<Card className="bg-zinc-900 border-zinc-800">
+				<CardHeader>
+					<CardTitle className="text-white">Loading...</CardTitle>
+				</CardHeader>
+			</Card>
+		),
+	},
+);
 
 export default function Home() {
 	return (
