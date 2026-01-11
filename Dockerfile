@@ -1,5 +1,4 @@
 
-
 # --- Etapa de dependencias ---
 FROM oven/bun:1 AS deps
 WORKDIR /app
@@ -20,20 +19,18 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
-# Copiar todo lo necesario
+# App
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/bun.lockb* ./
 
-# Crear carpeta meta para Drizzle si no existe
-RUN mkdir -p ./drizzle/migrations/meta && \
-    touch ./drizzle/migrations/meta/_journal.json
+# Drizzle
+COPY --from=builder /app/drizzle ./drizzle
+COPY --from=builder /app/drizzle.config.* ./
 
-# Exponer puerto interno
 EXPOSE 3000
 
-# CMD para ejecutar migraciones y luego Next.js
-CMD ["sh", "-c", "bun run db:migrate || true && bun run start"]
+CMD ["sh", "-c", "bun run db:migrate && bun run start"]
 
