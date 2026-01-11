@@ -1,11 +1,12 @@
 
-# --- Etapa de dependencias ---
+
+# --- Etapa deps ---
 FROM oven/bun:1 AS deps
 WORKDIR /app
-COPY package.json bun.lockb* ./
+COPY package.json bun.lockb ./
 RUN bun install --frozen-lockfile
 
-# --- Etapa de build ---
+# --- Etapa build ---
 FROM oven/bun:1 AS builder
 WORKDIR /app
 COPY . .
@@ -24,13 +25,12 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/bun.lockb* ./
-
-# Drizzle
-COPY --from=builder /app/drizzle ./drizzle
-COPY --from=builder /app/drizzle.config.* ./
+COPY --from=builder /app/bun.lock ./
+COPY --from=builder /app/drizzle.config.ts ./
+COPY --from=builder /app/db ./db
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "bun run db:migrate && bun run start"]
+# Migrar y arrancar
+CMD ["sh", "-c", "bun run db:generate && bun run db:migrate && bun run start"]
 
