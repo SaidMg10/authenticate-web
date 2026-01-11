@@ -20,14 +20,16 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
+
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/bun.lockb* ./
-COPY --from=builder /app/drizzle.config.ts ./
-COPY --from=builder /app/db ./db
+COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+
 
 EXPOSE 3000
 
